@@ -26,7 +26,7 @@ public class Hangman {
 	/** 
 	 * Get the phrase and do the loop to play the game
 	 * 
-	 * TODO: Alex
+	 * TODO: Alex (use while loop)
 	 */
 	private static void play() {
 	}
@@ -69,7 +69,7 @@ public class Hangman {
 	/** 
 	 * Gets the next guess and updates the value of failures
 	 * 
-	 * TODO: Ben
+	 * TODO: Ben (use while loop)
 	 */
 	private static void getNextGuess() {
 	}
@@ -78,7 +78,7 @@ public class Hangman {
 	 * Gets a letter from the user; it must not have already been guessed before
 	 * @return that new letter
 	 * 
-	 * TODO: Alex
+	 * TODO: Alex (use while loop)
 	 */
 	private static char getNextValidGuess() {
 		return 0;
