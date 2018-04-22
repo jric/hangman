@@ -1,4 +1,13 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Scanner;
+import java.util.concurrent.ThreadLocalRandom;
+
+import org.json.JSONObject;
+import org.json.JSONTokener;
 
 /**
  * Plays the game, hangman!
@@ -11,21 +20,106 @@ public class Hangman {
 	private static int failures = 0;
 	private static String phrase;
 	private static String guesses = "";
+	private static boolean twoPlayer = false;
+	private static String category = "unknown";
+	private static String API_KEY = System.getenv("NEWSAPI_ORG_API_KEY");
+	
+	// check each space
+	// is it available?
+	// if so, how many ways can it help me win?
+	// if it's the best so far, keep track of that space
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		twoPlayer = getOneOrTwoPlayer() == 2;
+		if (!twoPlayer) {
+			category = getCategory();
+			System.out.println("The category is " + category + " from newsapi.org");
+		}
 		play();
+	}
+	
+	private static String getCategory() {
+		String[] categories = {
+				"business",
+				"entertainment",
+				"health",
+				"science",
+				"sports",
+				"technology",
+				"headlines"
+		};
+		int pick = ThreadLocalRandom.current().nextInt(0, categories.length);
+		return categories[pick];
+	}
+	
+	/**
+	 * Get headlines from urls like https://newsapi.org/v2/sources?apiKey=1b4b5629da734218baac04aa07e2d478&category=entertainment&language=en&country=us
+	 * @return
+	 */
+	private static String getAHeadline() {
+		String getHeadlinesUrl = "https://newsapi.org/v2/top-headlines?apiKey=" + API_KEY;
+		if(category.equals("headlines")) {
+			getHeadlinesUrl += "&country=us";
+		} else {
+			String sources = null;
+			if (category.equalsIgnoreCase("business"))
+				sources="bloomberg,business-insider,cnbc,fortune,the-wall-street-journal";
+			else if (category.equals("entertainment"))
+				sources="buzzfeed,entertainment-weekly,ign,mashable,mtv-news,polygon";
+			else if (category.equals("health"))
+				sources="medical-news-today";
+			else if (category.equals("science"))
+				sources = "national-geographic,new-scientist,next-big-future";
+			else if (category.equals("sports"))
+				sources = "bleacher-report,espn,espn-cric-info,fox-sports,nfl-news,nhl-news";
+			else if (category.equals("technology"))
+				sources = "ars-technica,crypto-coins-news,engadget,hacker-news,recode,techcrunch,techradar,the-next-web,the-verge,wired";
+			if (sources == null)
+				throw new RuntimeException("Unknown category: " + category);
+			getHeadlinesUrl += "&sources=" + sources;
+		}
+		try {
+			URL getHeadlinesURL = new URL(getHeadlinesUrl);
+			BufferedReader in = new BufferedReader(new InputStreamReader(getHeadlinesURL.openStream()));
+			JSONTokener jsonTokener = new JSONTokener(in);
+			JSONObject jsonObject = new JSONObject(jsonTokener);
+			in.close();
+			int pick = ThreadLocalRandom.current().nextInt(0, jsonObject.getJSONArray("articles").length());
+			return jsonObject.getJSONArray("articles").getJSONObject(pick).getString("title");
+		} catch (MalformedURLException e) {
+			throw new AssertionError("Expected my url to be correct: " + e.getLocalizedMessage(), e);
+		} catch (IOException e) {
+			throw new AssertionError("Unable to read " + getHeadlinesUrl + " right now: " + e.getLocalizedMessage(), e);
+		}
+	}
+
+	private static int getOneOrTwoPlayer() {
+		int answer = 0;
+		while (answer < 1 || answer > 2) {
+			System.out.print("One player or two?  (please enter '1' or '2') > ");
+			try {
+				answer = scanner.nextInt();
+			} catch (Exception e) {
+				System.out.print("Please enter '1' or '2' > ");
+			}
+		}
+		return answer;
 	}
 
 	/** 
 	 * Get the phrase and do the loop to play the game
 	 */
 	private static void play() {
-		System.out.println("Enter the secret phrase:");
-		phrase = getPhrase();
-		clearTheScreen();
+		if (twoPlayer) {
+			System.out.println("Enter the secret phrase:");
+			phrase = getPhrase();
+			clearTheScreen();
+		} else {
+			phrase = getAHeadline();
+		}
 		while (true) {
 			drawHangman();
 			System.out.println("\n");
@@ -70,7 +164,7 @@ public class Hangman {
 	 * @return true iff the number of failures is >= 6
 	 */
 	private static boolean RIP() {
-		if (failures >= 6)
+		if (failures >= 6 || !twoPlayer && failures >= 1)
 			return true;
 		return false;
 	}
