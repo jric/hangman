@@ -15,9 +15,12 @@ import java.util.Scanner;
  *
  */
 public class Hangman {
+	static int counter;
 	static int bodyparts;
 	static int letters;
-	String phrase;
+	static String phrase;
+	static String guessed;
+
 	/**
 	 * @param args
 	 */
@@ -46,6 +49,11 @@ public class Hangman {
 	 * TODO: Andrew
 	 */
 	private static void clearTheScreen() {
+		int linecounter = 0;
+		while (linecounter < 20) {
+			System.out.println("");
+			linecounter++;
+		}
 	}
 
 	/**
@@ -77,6 +85,7 @@ public class Hangman {
 	 * TODO: Andrew
 	 */
 	private static void showGuesses() {
+		System.out.print(guessed);
 	}
 
 	/** 
@@ -107,6 +116,19 @@ public class Hangman {
 	 * TODO: Andrew
 	 */
 	private static void drawPhrase() {
+		for (int counter = 0; counter < phrase.length(); counter++) {
+			char check = phrase.charAt(counter);
+			// if the character at index #(counter #) in string "phrase" is in guessed list
+			if (-1 != guessed.lastIndexOf(check)) {
+				System.out.print(check);
+			}
+			else if(Character.isAlphabetic(check)) {
+				System.out.print("_");
+			}
+			else {
+				System.out.print(check);
+			} 
+		}
 	}
 
 	/**
@@ -124,7 +146,18 @@ public class Hangman {
 	 * TODO: Andrew (use a while loop)
 	 */
 	private static String getPhrase() {
-		return null;
+		Scanner scanner = new Scanner(System.in);
+		System.out.println("What will your phrase be?");
+		String phrase = scanner.nextLine();
+		int letters = phrase.length();
+		if (letters > 9) {
+			return phrase;
+		}
+		else {
+			System.out.println("Sorry, it has to be at least 10 letters.  Try again!");
+			return getPhrase();
+		}
+
 	}
 
 }
