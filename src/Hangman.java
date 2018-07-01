@@ -15,7 +15,9 @@ import java.util.Scanner;
  *
  */
 public class Hangman {
-
+	static int bodyparts;
+	static int letters;
+	String phrase;
 	/**
 	 * @param args
 	 */
@@ -28,9 +30,16 @@ public class Hangman {
 	 * 
 	 * TODO: Alex (use while loop)
 	 */
+	
 	private static void play() {
+		for (; !RIP() || !isPhraseComplete();) {
+			drawHangman();
+			getNextGuess();
+			showGuesses();
+			drawPhrase();
+			getNextValidGuess();
+		}
 	}
-
 	/**
 	 * Print out a bunch of newlines to clear the secret phrase off the screen.  Or better yet, print the terminal
 	 * control characters:  \033c  (for clear screen)
