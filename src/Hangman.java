@@ -34,10 +34,9 @@ public class Hangman {
 	private static void play() {
 		for (; !RIP() || !isPhraseComplete();) {
 			drawHangman();
-			getNextGuess();
 			showGuesses();
 			drawPhrase();
-			getNextValidGuess();
+			getNextGuess();
 		}
 	}
 	/**
@@ -64,7 +63,12 @@ public class Hangman {
 	 * TODO: Alex
 	 */
 	private static boolean RIP() {
-		return false;
+		if (bodyparts >= 6) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
 	/**
@@ -90,7 +94,11 @@ public class Hangman {
 	 * TODO: Alex (use while loop)
 	 */
 	private static char getNextValidGuess() {
-		return 0;
+		Scanner scanner = new Scanner(System.in);
+		String line;
+		line = scanner.nextLine();
+		scanner.close();
+		return line.charAt(0);
 	}
 
 	/**
