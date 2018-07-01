@@ -41,6 +41,12 @@ public class Hangman {
 			drawPhrase();
 			getNextGuess();
 		}
+		if (isPhraseComplete()) {
+			System.out.println("Congradulations. You win!!!");
+		}
+		else {
+			System.out.println("Awww. You lost. Better luck next time. NOOB!!!");
+		}
 	}
 	/**
 	 * Print out a bunch of newlines to clear the secret phrase off the screen.  Or better yet, print the terminal
@@ -107,7 +113,22 @@ public class Hangman {
 		String line;
 		line = scanner.nextLine();
 		scanner.close();
-		return line.charAt(0);
+		char firstLetter = line.charAt(0);
+		char lowerCase = Character.toLowerCase(firstLetter);
+		if (-1 == guessed.lastIndexOf(lowerCase)) {
+			return lowerCase;
+		}
+		while (-1 != guessed.lastIndexOf(firstLetter)) {
+			System.out.println ("Woops. That letter has already been picked. Try again!");
+			line = scanner.nextLine();
+			scanner.close();
+			firstLetter = line.charAt(0);
+			lowerCase = Character.toLowerCase(firstLetter);
+			if (-1 == guessed.lastIndexOf(lowerCase)) {
+				return lowerCase;
+			}
+		}
+		return 0; //you should never get to this line
 	}
 
 	/**
